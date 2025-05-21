@@ -48,8 +48,8 @@ public class Patient implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s — CURP: %s — Tel: %s",
-                name, curp, phone);
+        return String.format("%s — CURP: %s — Tel: %s - Email: %s ",
+                name, curp, phone, email);
     }
 
 }

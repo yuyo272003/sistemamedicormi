@@ -51,8 +51,8 @@ public class Doctor implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s (Especialidad: %s) — Cédula: %s",
-                name, specialty, cedula);
+        return String.format("%s (Especialidad: %s) — Cédula: %s - Email: %s",
+                name, specialty, cedula, email);
     }
 
 }
