@@ -11,17 +11,15 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class MainFrame extends JFrame {
     private final MedicalService service;
     private List<Doctor> doctors = new ArrayList<>();
     private List<Patient> patients = new ArrayList<>();
     private List<Appointment> appointments = new ArrayList<>();
-    private final Map<Integer, String> doctorNames = new HashMap<>();
+    private final Map<Integer, String> doctorNames  = new HashMap<>();
     private final Map<Integer, String> patientNames = new HashMap<>();
 
     private static final Font HEADER_FONT = new Font("Segoe UI", Font.BOLD, 14);
@@ -56,9 +54,9 @@ public class MainFrame extends JFrame {
         JTabbedPane tabs = new JTabbedPane(JTabbedPane.LEFT);
         tabs.setFont(CELL_FONT);
         tabs.setBackground(BG);
-        tabs.addTab("Médicos", createDoctorPanel());
-        tabs.addTab("Pacientes", createPatientPanel());
-        tabs.addTab("Citas", createAppointmentPanel());
+        tabs.addTab("Médicos",    createDoctorPanel());
+        tabs.addTab("Pacientes",  createPatientPanel());
+        tabs.addTab("Citas",      createAppointmentPanel());
         add(tabs, BorderLayout.CENTER);
     }
 
@@ -73,14 +71,14 @@ public class MainFrame extends JFrame {
         loadDoctors();
         reloadDoctorsTable(model);
 
-        JButton add = mkButton("Agregar", e -> { showAddDoctorDialog(); reloadDoctorsTable(model); });
-        JButton edit = mkButton("Editar", e -> {
+        JButton add  = mkButton("Agregar",  e -> { showAddDoctorDialog();    reloadDoctorsTable(model); });
+        JButton edit = mkButton("Editar",   e -> {
             int r = table.getSelectedRow();
-            if (r >= 0) { showUpdateDoctorDialog(doctors.get(r)); reloadDoctorsTable(model); }
+            if (r>=0) { showUpdateDoctorDialog(doctors.get(r)); reloadDoctorsTable(model); }
         });
-        JButton del = mkButton("Eliminar", e -> {
+        JButton del  = mkButton("Eliminar", e -> {
             int r = table.getSelectedRow();
-            if (r >= 0) { deleteDoctor(doctors.get(r).getId()); reloadDoctorsTable(model); }
+            if (r>=0) { deleteDoctor(doctors.get(r).getId()); reloadDoctorsTable(model); }
         });
 
         return panelWith(table, add, edit, del);
@@ -97,14 +95,14 @@ public class MainFrame extends JFrame {
         loadPatients();
         reloadPatientsTable(model);
 
-        JButton add = mkButton("Agregar", e -> { showAddPatientDialog(); reloadPatientsTable(model); });
-        JButton edit = mkButton("Editar", e -> {
+        JButton add  = mkButton("Agregar",  e -> { showAddPatientDialog();   reloadPatientsTable(model); });
+        JButton edit = mkButton("Editar",   e -> {
             int r = table.getSelectedRow();
-            if (r >= 0) { showUpdatePatientDialog(patients.get(r)); reloadPatientsTable(model); }
+            if (r>=0) { showUpdatePatientDialog(patients.get(r)); reloadPatientsTable(model); }
         });
-        JButton del = mkButton("Eliminar", e -> {
+        JButton del  = mkButton("Eliminar", e -> {
             int r = table.getSelectedRow();
-            if (r >= 0) { deletePatient(patients.get(r).getId()); reloadPatientsTable(model); }
+            if (r>=0) { deletePatient(patients.get(r).getId()); reloadPatientsTable(model); }
         });
 
         return panelWith(table, add, edit, del);
@@ -118,17 +116,20 @@ public class MainFrame extends JFrame {
         JTable table = new JTable(model);
         styleTable(table);
 
+        // cargar nombres de doctors y patients para mostrar en tabla
+        loadDoctors();
+        loadPatients();
         loadAppointments();
         reloadAppointmentsTable(model);
 
-        JButton add = mkButton("Agregar", e -> { showAddAppointmentDialog(); reloadAppointmentsTable(model); });
-        JButton edit = mkButton("Editar", e -> {
+        JButton add    = mkButton("Agregar",    e -> { showAddAppointmentDialog(); reloadAppointmentsTable(model); });
+        JButton edit   = mkButton("Editar",     e -> {
             int r = table.getSelectedRow();
-            if (r >= 0) { showUpdateAppointmentDialog(appointments.get(r)); reloadAppointmentsTable(model); }
+            if (r>=0) { showUpdateAppointmentDialog(appointments.get(r)); reloadAppointmentsTable(model); }
         });
-        JButton del = mkButton("Eliminar", e -> {
+        JButton del    = mkButton("Eliminar",   e -> {
             int r = table.getSelectedRow();
-            if (r >= 0) { deleteAppointment(appointments.get(r).getId()); reloadAppointmentsTable(model); }
+            if (r>=0) { deleteAppointment(appointments.get(r).getId()); reloadAppointmentsTable(model); }
         });
 
         return panelWith(table, add, edit, del);
@@ -139,7 +140,7 @@ public class MainFrame extends JFrame {
         p.setBackground(BG);
         p.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         p.add(new JScrollPane(table), BorderLayout.CENTER);
-        JPanel bar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10,0));
+        JPanel bar = new JPanel(new FlowLayout(FlowLayout.RIGHT,10,0));
         bar.setBackground(BG);
         bar.add(add); bar.add(edit); bar.add(del);
         p.add(bar, BorderLayout.SOUTH);
@@ -173,7 +174,9 @@ public class MainFrame extends JFrame {
     }
     private void reloadDoctorsTable(DefaultTableModel m) {
         m.setRowCount(0);
-        doctors.forEach(d -> m.addRow(new Object[]{d.getName(), d.getSpecialty(), d.getEmail()}));
+        doctors.forEach(d ->
+                m.addRow(new Object[]{d.getName(), d.getSpecialty(), d.getEmail()})
+        );
     }
 
     private void loadPatients() {
@@ -182,42 +185,59 @@ public class MainFrame extends JFrame {
     }
     private void reloadPatientsTable(DefaultTableModel m) {
         m.setRowCount(0);
-        patients.forEach(p -> m.addRow(new Object[]{p.getName(), p.getCurp(), p.getPhone(), p.getEmail()}));
+        patients.forEach(p ->
+                m.addRow(new Object[]{p.getName(), p.getCurp(), p.getPhone(), p.getEmail()})
+        );
     }
 
     private void loadAppointments() {
         try {
             appointments = service.getAllAppointments();
             doctorNames.clear(); patientNames.clear();
-            doctors.forEach(d -> doctorNames.put(d.getId(), d.getName()));
-            patients.forEach(p -> patientNames.put(p.getId(), p.getName()));
+            for (Doctor d : doctors)   doctorNames.put(d.getId(), d.getName());
+            for (Patient p : patients) patientNames.put(p.getId(), p.getName());
         } catch (Exception ex) { showError(ex); }
     }
     private void reloadAppointmentsTable(DefaultTableModel m) {
         m.setRowCount(0);
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-        appointments.forEach(a -> {
+        for (Appointment a : appointments) {
             String date = fmt.format(a.getDate());
-            String dn = doctorNames.getOrDefault(a.getDoctorId(), "");
-            String pn = patientNames.getOrDefault(a.getPatientId(), "");
+            String dn   = doctorNames.getOrDefault(a.getDoctorId(), "");
+            String pn   = patientNames.getOrDefault(a.getPatientId(), "");
             m.addRow(new Object[]{date, a.getTime(), a.getReason(), dn, pn});
-        });
+        }
     }
 
-    // ----- DIÁLOGOS COMPLETOS -----
+    // —— MÉTODOS DE DIÁLOGO CON VALIDACIONES ——
+
     private void showAddDoctorDialog() {
-        JTextField name = new JTextField(), spec = new JTextField(), ced = new JTextField(), mail = new JTextField();
+        JTextField name = new JTextField(), spec = new JTextField(),
+                ced  = new JTextField(), mail = new JTextField();
         JPanel panel = new JPanel(new GridLayout(4,2));
-        panel.add(new JLabel("Nombre:")); panel.add(name);
-        panel.add(new JLabel("Especialidad:")); panel.add(spec);
-        panel.add(new JLabel("Cédula:")); panel.add(ced);
-        panel.add(new JLabel("Email:")); panel.add(mail);
-        int op = JOptionPane.showConfirmDialog(this, panel, "Nuevo Médico", JOptionPane.OK_CANCEL_OPTION);
+        panel.add(new JLabel("Nombre:"));      panel.add(name);
+        panel.add(new JLabel("Especialidad:"));panel.add(spec);
+        panel.add(new JLabel("Cédula:"));      panel.add(ced);
+        panel.add(new JLabel("Email:"));       panel.add(mail);
+
+        int op = JOptionPane.showConfirmDialog(this, panel, "Nuevo Médico",
+                JOptionPane.OK_CANCEL_OPTION);
         if (op == JOptionPane.OK_OPTION) {
+            if (name.getText().trim().isEmpty() ||
+                    spec.getText().trim().isEmpty() ||
+                    ced.getText().trim().isEmpty() ||
+                    mail.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Todos los campos son obligatorios.",
+                        "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             try {
                 Doctor d = new Doctor();
-                d.setName(name.getText()); d.setSpecialty(spec.getText());
-                d.setCedula(ced.getText()); d.setEmail(mail.getText());
+                d.setName(name.getText().trim());
+                d.setSpecialty(spec.getText().trim());
+                d.setCedula(ced.getText().trim());
+                d.setEmail(mail.getText().trim());
                 service.addDoctor(d);
                 loadDoctors();
             } catch (Exception ex) { showError(ex); }
@@ -230,15 +250,28 @@ public class MainFrame extends JFrame {
         JTextField ced  = new JTextField(d.getCedula());
         JTextField mail = new JTextField(d.getEmail());
         JPanel panel = new JPanel(new GridLayout(4,2));
-        panel.add(new JLabel("Nombre:")); panel.add(name);
-        panel.add(new JLabel("Especialidad:")); panel.add(spec);
-        panel.add(new JLabel("Cédula:")); panel.add(ced);
-        panel.add(new JLabel("Email:")); panel.add(mail);
-        int op = JOptionPane.showConfirmDialog(this, panel, "Editar Médico", JOptionPane.OK_CANCEL_OPTION);
+        panel.add(new JLabel("Nombre:"));      panel.add(name);
+        panel.add(new JLabel("Especialidad:"));panel.add(spec);
+        panel.add(new JLabel("Cédula:"));      panel.add(ced);
+        panel.add(new JLabel("Email:"));       panel.add(mail);
+
+        int op = JOptionPane.showConfirmDialog(this, panel, "Editar Médico",
+                JOptionPane.OK_CANCEL_OPTION);
         if (op == JOptionPane.OK_OPTION) {
+            if (name.getText().trim().isEmpty() ||
+                    spec.getText().trim().isEmpty() ||
+                    ced.getText().trim().isEmpty() ||
+                    mail.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Todos los campos son obligatorios.",
+                        "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             try {
-                d.setName(name.getText()); d.setSpecialty(spec.getText());
-                d.setCedula(ced.getText()); d.setEmail(mail.getText());
+                d.setName(name.getText().trim());
+                d.setSpecialty(spec.getText().trim());
+                d.setCedula(ced.getText().trim());
+                d.setEmail(mail.getText().trim());
                 service.updateDoctor(d);
                 loadDoctors();
             } catch (Exception ex) { showError(ex); }
@@ -251,18 +284,32 @@ public class MainFrame extends JFrame {
     }
 
     private void showAddPatientDialog() {
-        JTextField name = new JTextField(), curp = new JTextField(), phone = new JTextField(), mail = new JTextField();
+        JTextField name  = new JTextField(), curp = new JTextField(),
+                phone = new JTextField(), mail = new JTextField();
         JPanel panel = new JPanel(new GridLayout(4,2));
-        panel.add(new JLabel("Nombre:")); panel.add(name);
-        panel.add(new JLabel("CURP:")); panel.add(curp);
+        panel.add(new JLabel("Nombre:"));   panel.add(name);
+        panel.add(new JLabel("CURP:"));     panel.add(curp);
         panel.add(new JLabel("Teléfono:")); panel.add(phone);
-        panel.add(new JLabel("Email:")); panel.add(mail);
-        int op = JOptionPane.showConfirmDialog(this, panel, "Nuevo Paciente", JOptionPane.OK_CANCEL_OPTION);
+        panel.add(new JLabel("Email:"));    panel.add(mail);
+
+        int op = JOptionPane.showConfirmDialog(this, panel, "Nuevo Paciente",
+                JOptionPane.OK_CANCEL_OPTION);
         if (op == JOptionPane.OK_OPTION) {
+            if (name.getText().trim().isEmpty() ||
+                    curp.getText().trim().isEmpty() ||
+                    phone.getText().trim().isEmpty() ||
+                    mail.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Todos los campos son obligatorios.",
+                        "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             try {
                 Patient p = new Patient();
-                p.setName(name.getText()); p.setCurp(curp.getText());
-                p.setPhone(phone.getText()); p.setEmail(mail.getText());
+                p.setName(name.getText().trim());
+                p.setCurp(curp.getText().trim());
+                p.setPhone(phone.getText().trim());
+                p.setEmail(mail.getText().trim());
                 service.addPatient(p);
                 loadPatients();
             } catch (Exception ex) { showError(ex); }
@@ -270,20 +317,33 @@ public class MainFrame extends JFrame {
     }
 
     private void showUpdatePatientDialog(Patient p) {
-        JTextField name = new JTextField(p.getName());
-        JTextField curp = new JTextField(p.getCurp());
+        JTextField name  = new JTextField(p.getName());
+        JTextField curp  = new JTextField(p.getCurp());
         JTextField phone = new JTextField(p.getPhone());
-        JTextField mail = new JTextField(p.getEmail());
+        JTextField mail  = new JTextField(p.getEmail());
         JPanel panel = new JPanel(new GridLayout(4,2));
-        panel.add(new JLabel("Nombre:")); panel.add(name);
-        panel.add(new JLabel("CURP:")); panel.add(curp);
+        panel.add(new JLabel("Nombre:"));   panel.add(name);
+        panel.add(new JLabel("CURP:"));     panel.add(curp);
         panel.add(new JLabel("Teléfono:")); panel.add(phone);
-        panel.add(new JLabel("Email:")); panel.add(mail);
-        int op = JOptionPane.showConfirmDialog(this, panel, "Editar Paciente", JOptionPane.OK_CANCEL_OPTION);
+        panel.add(new JLabel("Email:"));    panel.add(mail);
+
+        int op = JOptionPane.showConfirmDialog(this, panel, "Editar Paciente",
+                JOptionPane.OK_CANCEL_OPTION);
         if (op == JOptionPane.OK_OPTION) {
+            if (name.getText().trim().isEmpty() ||
+                    curp.getText().trim().isEmpty() ||
+                    phone.getText().trim().isEmpty() ||
+                    mail.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Todos los campos son obligatorios.",
+                        "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             try {
-                p.setName(name.getText()); p.setCurp(curp.getText());
-                p.setPhone(phone.getText()); p.setEmail(mail.getText());
+                p.setName(name.getText().trim());
+                p.setCurp(curp.getText().trim());
+                p.setPhone(phone.getText().trim());
+                p.setEmail(mail.getText().trim());
                 service.updatePatient(p);
                 loadPatients();
             } catch (Exception ex) { showError(ex); }
@@ -296,22 +356,38 @@ public class MainFrame extends JFrame {
     }
 
     private void showAddAppointmentDialog() {
-        JTextField date = new JTextField(), time = new JTextField(), reason = new JTextField(), docId = new JTextField(), patId = new JTextField();
+        JTextField date   = new JTextField(),
+                time   = new JTextField(),
+                reason = new JTextField(),
+                docId  = new JTextField(),
+                patId  = new JTextField();
         JPanel panel = new JPanel(new GridLayout(5,2));
         panel.add(new JLabel("Fecha (YYYY-MM-DD):")); panel.add(date);
-        panel.add(new JLabel("Hora (HH:MM:SS):")); panel.add(time);
-        panel.add(new JLabel("Motivo:")); panel.add(reason);
-        panel.add(new JLabel("ID Doctor:")); panel.add(docId);
-        panel.add(new JLabel("ID Paciente:")); panel.add(patId);
-        int op = JOptionPane.showConfirmDialog(this, panel, "Nueva Cita", JOptionPane.OK_CANCEL_OPTION);
+        panel.add(new JLabel("Hora (HH:MM:SS):"));    panel.add(time);
+        panel.add(new JLabel("Motivo:"));             panel.add(reason);
+        panel.add(new JLabel("ID Doctor:"));          panel.add(docId);
+        panel.add(new JLabel("ID Paciente:"));        panel.add(patId);
+
+        int op = JOptionPane.showConfirmDialog(this, panel, "Nueva Cita",
+                JOptionPane.OK_CANCEL_OPTION);
         if (op == JOptionPane.OK_OPTION) {
+            if (date.getText().trim().isEmpty() ||
+                    time.getText().trim().isEmpty() ||
+                    reason.getText().trim().isEmpty() ||
+                    docId.getText().trim().isEmpty() ||
+                    patId.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Todos los campos son obligatorios.",
+                        "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             try {
                 Appointment a = new Appointment();
-                a.setDate(java.sql.Date.valueOf(date.getText()));
-                a.setTime(time.getText());
-                a.setReason(reason.getText());
-                a.setDoctorId(Integer.parseInt(docId.getText()));
-                a.setPatientId(Integer.parseInt(patId.getText()));
+                a.setDate(java.sql.Date.valueOf(date.getText().trim()));
+                a.setTime(time.getText().trim());
+                a.setReason(reason.getText().trim());
+                a.setDoctorId(Integer.parseInt(docId.getText().trim()));
+                a.setPatientId(Integer.parseInt(patId.getText().trim()));
                 service.addAppointment(a);
                 loadAppointments();
             } catch (Exception ex) { showError(ex); }
@@ -320,25 +396,37 @@ public class MainFrame extends JFrame {
 
     private void showUpdateAppointmentDialog(Appointment a) {
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-        JTextField date = new JTextField(fmt.format(a.getDate()));
-        JTextField time = new JTextField(a.getTime());
+        JTextField date   = new JTextField(fmt.format(a.getDate()));
+        JTextField time   = new JTextField(a.getTime());
         JTextField reason = new JTextField(a.getReason());
-        JTextField docId = new JTextField(String.valueOf(a.getDoctorId()));
-        JTextField patId = new JTextField(String.valueOf(a.getPatientId()));
+        JTextField docId  = new JTextField(String.valueOf(a.getDoctorId()));
+        JTextField patId  = new JTextField(String.valueOf(a.getPatientId()));
         JPanel panel = new JPanel(new GridLayout(5,2));
         panel.add(new JLabel("Fecha (YYYY-MM-DD):")); panel.add(date);
-        panel.add(new JLabel("Hora (HH:MM:SS):")); panel.add(time);
-        panel.add(new JLabel("Motivo:")); panel.add(reason);
-        panel.add(new JLabel("ID Doctor:")); panel.add(docId);
-        panel.add(new JLabel("ID Paciente:")); panel.add(patId);
-        int op = JOptionPane.showConfirmDialog(this, panel, "Editar Cita", JOptionPane.OK_CANCEL_OPTION);
+        panel.add(new JLabel("Hora (HH:MM:SS):"));    panel.add(time);
+        panel.add(new JLabel("Motivo:"));             panel.add(reason);
+        panel.add(new JLabel("ID Doctor:"));          panel.add(docId);
+        panel.add(new JLabel("ID Paciente:"));        panel.add(patId);
+
+        int op = JOptionPane.showConfirmDialog(this, panel, "Editar Cita",
+                JOptionPane.OK_CANCEL_OPTION);
         if (op == JOptionPane.OK_OPTION) {
+            if (date.getText().trim().isEmpty() ||
+                    time.getText().trim().isEmpty() ||
+                    reason.getText().trim().isEmpty() ||
+                    docId.getText().trim().isEmpty() ||
+                    patId.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Todos los campos son obligatorios.",
+                        "Validación", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             try {
-                a.setDate(java.sql.Date.valueOf(date.getText()));
-                a.setTime(time.getText());
-                a.setReason(reason.getText());
-                a.setDoctorId(Integer.parseInt(docId.getText()));
-                a.setPatientId(Integer.parseInt(patId.getText()));
+                a.setDate(java.sql.Date.valueOf(date.getText().trim()));
+                a.setTime(time.getText().trim());
+                a.setReason(reason.getText().trim());
+                a.setDoctorId(Integer.parseInt(docId.getText().trim()));
+                a.setPatientId(Integer.parseInt(patId.getText().trim()));
                 service.updateAppointment(a);
                 loadAppointments();
             } catch (Exception ex) { showError(ex); }
@@ -351,6 +439,7 @@ public class MainFrame extends JFrame {
     }
 
     private void showError(Exception ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this,
+                ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
